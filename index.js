@@ -1,36 +1,21 @@
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
-ctx.fillRect(10, 10, 10, 10);
 
-canvas.width = 200;
-canvas.height = 200;
+canvas.width = 400;
+canvas.height = 500;
 
-/*---------------------*/
-
-function createLayer(){
-  let layerData = new Array((canvas.width * canvas.height)*4).fill(255);
-  return layerData
-}
-
-const imageData = createLayer();
-
-for(let i = 0; i < imageData.length/4; i++){
-  imageData[(i*4)+0] = 0;
-  imageData[(i*4)+1] = 0;
-  imageData[(i*4)+2] = 255;
-  imageData[(i*4)+3] = 255;
-}
-let editedData = ctx.createImageData(canvas.width, canvas.height);
-editedData.data.set(imageData);
-
-ctx.putImageData(editedData, 0, 0);
+let layers = [];
+let layerIndex = 0;
+layers.push(new addLayer(0, 0, 0, 0));
+layers.push(new addLayer(0, 0, 0, 0));
+layers.push(new addLayer(0, 0, 0, 0));
 
 /*---------------------*/
 
 let mouseX;
 let mouseY;
 
-function mouseLocation(event){
+function mouseLocation(event) {
   mouseX = (event.clientX - canvas.offsetLeft);
   mouseY = (event.clientY - canvas.offsetTop);
   let endString = "x: " + mouseX + " | " + "y:" + mouseY;
@@ -39,9 +24,9 @@ function mouseLocation(event){
 
 /*---------------------*/
 
-function saveCanvas(){
+function saveCanvas() {
   //not done yet
-  
+
   let img = canvas.toDataURL("image/png");
   let image = document.getElementById("img");
 
@@ -50,34 +35,34 @@ function saveCanvas(){
 
 /*---------------------*/
 
-function addPixel(x, y){
-  let cIndex = x + (y * canvas.width); 
-  imageData[(cIndex * 4) + 0] = 255;
-  imageData[(cIndex * 4) + 1] = 255;
-  imageData[(cIndex * 4) + 2] = 255;
-  imageData[(cIndex * 4) + 3] = 255;
+function addPixel(x, y, color) {
+  let cIndex = x + (y * canvas.width);
+  layers[layerIndex].layerData[(cIndex * 4) + 0] = color[0];
+  layers[layerIndex].layerData[(cIndex * 4) + 1] = color[1];
+  layers[layerIndex].layerData[(cIndex * 4) + 2] = color[2];
+  layers[layerIndex].layerData[(cIndex * 4) + 3] = color[3];
 }
 
 /*---------------------*/
 
-function lineTool(){
-  if(mousedown){
+function lineTool() {
+  if (mousedown) {
 
-    for(let i = 0; i < mousePoints.length; i++){
-      lineTo(mousePoints[0][0], mousePoints[0][1], mousePoints[1][0], mousePoints[1][1]);
+    for (let i = 0; i < mousePoints.length; i++) {
+      lineTo(mousePoints[0][0], mousePoints[0][1], mousePoints[1][0], mousePoints[1][1], [0, 0, 0, 255]);
       mousePoints.shift();
     }
   }
 }
 
-function fillTool(){
-  if(firstClick){
-    floodFill(imageData, mousePoints[0][0], mousePoints[0][1], [255, 255, 255, 255]);
+function fillTool() {
+  if (firstClick) {
+    floodFill(layers[layerIndex].layerData, mousePoints[0][0], mousePoints[0][1], [255, 0, 0, 255]);
   }
 }
 
-function testTool(){
-  if(mousedown){
+function testTool() {
+  if (mousedown) {
     console.log("works");
   }
 }
@@ -87,8 +72,8 @@ function testTool(){
 const tools = [lineTool, fillTool, testTool];
 let toolIndex = 0;
 
-const minus = document.getElementById("minus");
-const plus = document.getElementById("plus");
+const minus = document.getElementById("toolSub");
+const plus = document.getElementById("toolAdd");
 
 const toolDisplay = document.getElementById("toolDisplay");
 
@@ -96,25 +81,39 @@ minus.innerHTML = "<";
 plus.innerHTML = ">";
 toolDisplay.innerHTML = toolIndex;
 
-minus.addEventListener("click", function(){
+minus.addEventListener("click", function () {
   toolIndex = (((toolIndex - 1) % tools.length) + tools.length) % tools.length;
   toolDisplay.innerHTML = toolIndex;
   console.log(toolIndex);
 })
 
-plus.addEventListener("click", function(){
+plus.addEventListener("click", function () {
   toolIndex = (((toolIndex + 1) % tools.length) + tools.length) % tools.length;
   toolDisplay.innerHTML = toolIndex
   console.log(toolIndex);
 })
 
+layerMinus.addEventListener("click", function () {
+  layerIndex--;
+  console.log(layerIndex);
+})
+
+layerPlus.addEventListener("click", function () {
+  layerIndex++;
+  console.log(layerIndex);
+})
+
 /*---------------------*/
 
-function updateFrame(){
+function updateFrame() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  editedData.data.set(imageData);
-  ctx.putImageData(editedData, 0, 0);
+  for(let i = 0; i < layers.length; i++){
+    createImageBitmap(layers[i].convert()).then(function(img) {
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    });
+  }
+
   // saveCanvas();
 }
 
@@ -122,12 +121,12 @@ let mousedown = false;
 let mousePoints = [];
 let firstClick = false;
 
-function click(){
+function click() {
   mouseLocation(event);
   // console.log(mousePoints);
-  if(mousedown){
+  if (mousedown) {
     mousePoints.push([mouseX, mouseY]);
-  }else{
+  } else {
     mousePoints = [];
   }
   // console.log(mousePoints);
@@ -138,7 +137,7 @@ function click(){
 
 canvas.addEventListener("mousemove", click);
 
-canvas.addEventListener("mousedown", function(){
+canvas.addEventListener("mousedown", function () {
   mousePoints.push([mouseX, mouseY]);
   mousedown = true;
   firstClick = true;
@@ -146,6 +145,6 @@ canvas.addEventListener("mousedown", function(){
   firstClick = false;
 })
 
-canvas.addEventListener("mouseup", function(){
+canvas.addEventListener("mouseup", function () {
   mousedown = false;
 })

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width">
-    <title>Line Tool</title>
+    <title>Drawing</title>
     <link href="style.css" rel="stylesheet" type="text/css" />
   </head>
   <body>
@@ -11,11 +11,16 @@
     <canvas id="canvas"></canvas>
     <img id="img">
     <div>
-      <button id="minus"></button>
-      <button id="plus"></button>
+      <button id="toolSub"></button>
+      <button id="toolAdd"></button>
       <span id="toolDisplay"></span>
     </div>
-    
+    <div>
+      <button id="layerMinus">+</button>
+      <button id="layerPlus">+</button>
+    </div>
+
+    <script src="layer.js"></script>
     <script src="fill.js"></script>
     <script src="line.js"></script>
     <script src="index.js"></script>
