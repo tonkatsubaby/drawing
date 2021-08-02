@@ -1,28 +1,34 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-    <title>Drawing</title>
-    <link href="style.css" rel="stylesheet" type="text/css" />
-  </head>
-  <body>
-    <p id="display">na</p>
-    <canvas id="canvas"></canvas>
-    <img id="img">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title>Drawing</title>
+  <link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+  <div style="display:flex;">
     <div>
-      <button id="toolSub"></button>
-      <button id="toolAdd"></button>
-      <span id="toolDisplay"></span>
-    </div>
-    <div>
-      <button id="layerMinus">+</button>
-      <button id="layerPlus">+</button>
+      <canvas id="canvas"></canvas>
     </div>
 
-    <script src="layer.js"></script>
-    <script src="fill.js"></script>
-    <script src="line.js"></script>
-    <script src="index.js"></script>
-  </body>
+    <div style="text-align:center;">
+      <button id="addLayer">+</button>
+      <div id="layerRows">
+      </div>
+    </div>
+  </div>
+  <div id="buttonRow"></div>
+  <div id="colors"></canvas>
+  <img id="img">
+
+  <script src="ui.js"></script>
+  <script src="layer.js"></script>
+  <script src="fill.js"></script>
+  <script src="line.js"></script>
+  <script src="index.js"></script>
+</body>
+
 </html>
